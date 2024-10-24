@@ -1,0 +1,53 @@
+
+import uproot
+import numpy as np
+import awkward as ak
+import matplotlib.pyplot as plt
+file=uproot.open("/home/public/data/ggH125/ZZ4lAnalysis.root")
+
+tree = file["ZZTree/candTree"]
+
+lepton_pt = tree["LepPt"].array()
+lepton_eta = tree["LepEta"].array()
+lepton_phi = tree["LepPhi"].array()
+
+
+
+#Cordinate transformation
+
+Px=lepton_pt*np.cos(lepton_phi)
+Py=lepton_pt*np.sin(lepton_phi)
+Pz=lepton_pt*np.sinh(lepton_eta)
+E_lepton=np.sqrt(Px**2+Py**2+Pz**2)
+
+px_z1 = ak.sum(Px[:, :2], axis=1)
+py_z1 = ak.sum(Py[:, :2], axis=1)
+pz_z1 = ak.sum(Pz[:, :2], axis=1)
+energy_z1 = ak.sum(E_lepton[:, :2], axis=1)
+
+mass_z1 = np.sqrt(energy_z1**2 - (px_z1**2 + py_z1**2 + pz_z1**2))
+
+px_higgs = ak.sum(Px, axis=1)
+py_higgs = ak.sum(Py, axis=1)
+pz_higgs = ak.sum(Pz, axis=1)
+energy_higgs = ak.sum(E_lepton, axis=1)
+
+mass_higgs = np.sqrt(energy_higgs**2 - (px_higgs**2 + py_higgs**2 + pz_higgs**2))
+
+M_H=ak.to_list(mass_higgs)
+M_Z=ak.to_list(mass_z1)
+print(type(M_H))
+
+
+plt.hist(M_H)
+
+plt.show()
+
+
+
+
+
+
+
+
+
